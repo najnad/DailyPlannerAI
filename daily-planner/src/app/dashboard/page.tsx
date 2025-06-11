@@ -22,11 +22,6 @@ export default function DashboardPage() {
 
   return (
     <div className="p-8">
-      {isLoggedIn && (
-        <div className="mt-4">
-          <LogoutButton />
-        </div>
-      )}
       <h1 className="text-3xl font-bold mb-4">My Tasks</h1>
       <NewTaskButton />
       {/* Later: Add Task List here */}

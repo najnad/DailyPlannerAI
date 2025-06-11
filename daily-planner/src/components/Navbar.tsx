@@ -1,10 +1,40 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/utils/supabaseClient'
+import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const router = useRouter()
+
+  // 🔄 Check auth state on mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      setIsLoggedIn(!!session)
+    }
+
+    checkSession()
+
+    // Real-time auth state change listener
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session)
+    })
+
+    return () => {
+      listener?.subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/')
+  }
 
   return (
     <nav className="bg-white border-b shadow-sm sticky top-0 z-50">
@@ -18,7 +48,19 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex space-x-6">
             <Link href="/dashboard" className="text-gray-700 hover:text-blue-500">Dashboard</Link>
-            <Link href="/login" className="text-gray-700 hover:text-blue-500">Login</Link>
+
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="text-red-600 hover:text-red-800 transition"
+              >
+                Log Out
+              </button>
+            ) : (
+              <Link href="/login" className="text-gray-700 hover:text-blue-500">
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Hamburger */}
@@ -34,7 +76,17 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden px-4 pb-4 space-y-2">
           <Link href="/dashboard" className="block text-gray-700 hover:text-blue-500">Dashboard</Link>
-          <Link href="/login" className="block text-gray-700 hover:text-blue-500">Login</Link>
+
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="block text-red-600 hover:text-red-800 w-full text-left"
+            >
+              Log Out
+            </button>
+          ) : (
+            <Link href="/login" className="block text-gray-700 hover:text-blue-500">Login</Link>
+          )}
         </div>
       )}
     </nav>
