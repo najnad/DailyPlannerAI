@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import TaskFormModal from './TaskFormModal'
+import { Plus } from 'lucide-react'
 
 interface Props {
   onTaskCreated: (task: any) => void;
+
 }
 
 export default function NewTaskButton({ onTaskCreated }: Props) {
@@ -14,8 +16,10 @@ export default function NewTaskButton({ onTaskCreated }: Props) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        + New Task
+        className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        aria-label="Add new task"
+      >
+        <Plus className="w-6 h-6"/>
       </button>
       <TaskFormModal 
         isOpen={isOpen} 

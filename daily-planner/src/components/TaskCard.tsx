@@ -1,6 +1,7 @@
 'use client'
 
 import { supabase } from '@/utils/supabaseClient'
+import { useState, useEffect } from 'react'
 
 interface TaskCardProps {
   task: any
@@ -9,24 +10,42 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCardProps) {
+  const [pendingDone, setPendingDone] = useState(false)
+  const [undoTimeout, setUndoTimeout] = useState<NodeJS.Timeout | null>(null)
   const hasDueDate = !!task.due_date;
 
   // Mark task as completed
-  const handleComplete = async () => {
-    const { data, error } = await supabase
+  const handleComplete = () => {
+    setPendingDone(true)
+
+    const timeout = setTimeout(async () => {
+      const { data, error } = await supabase
       .from('tasks')
       .update({ completed: true })
       .eq('id', task.id)
       .select()
       .single()
 
-    if (error) {
-      console.error('Failed to mark complete:', error.message)
-    } else {
-      onTaskUpdated(data)
-    }
+      if (!error && data) {
+        onTaskUpdated(data)
+      }
+
+      setPendingDone(false)
+      setUndoTimeout(null)
+
+    }, 5000)
+
+    setUndoTimeout(timeout)
   }
 
+  const handleUndo = () => {
+    if (undoTimeout) {
+      clearTimeout(undoTimeout)
+      setUndoTimeout(null)
+    }
+    setPendingDone(false)
+  }
+    
   // Delete task
   const handleDelete = async () => {
     const { error } = await supabase
@@ -46,7 +65,7 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCar
       
       <button
           onClick={handleDelete}
-          className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+          className="absolute top-3 right-3 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
         >
           Delete
       </button>
@@ -68,13 +87,24 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCar
       </div>
       
       {!task.completed && (
-        <button
-          onClick={handleComplete}
-          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Mark as Done
-        </button>
-        )}
+        <div className="pt-2">
+          {pendingDone ? (
+            <button
+              onClick={handleUndo}
+              className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+            >
+              Undo
+            </button>
+          ) : (
+            <button
+              onClick={handleComplete}
+              className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Mark as Done
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
