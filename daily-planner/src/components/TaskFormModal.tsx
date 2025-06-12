@@ -5,11 +5,13 @@ import { useState } from 'react'
 import { supabase } from '@/utils/supabaseClient'
 
 interface TaskFormModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onTaskCreated: (task: any) => void;
+
 }
 
-export default function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
+export default function TaskFormModal({ isOpen, onClose, onTaskCreated }: TaskFormModalProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('low')
@@ -36,12 +38,14 @@ export default function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
         due_date: dueDate ? new Date(dueDate).toISOString() : null,
         user_id: user.id,
       }
-    ])
+    ]).select().single()
 
     if (error) {
       console.error('Error creating task:', error.message)
       alert('Failed to create task.')
       return
+    } else {
+      onTaskCreated(data);
     }
 
     // Reset and close modal

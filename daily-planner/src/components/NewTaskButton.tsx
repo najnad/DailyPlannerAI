@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import TaskFormModal from './TaskFormModal'
 
-export default function NewTaskButton() {
+interface Props {
+  onTaskCreated: (task: any) => void;
+}
+
+export default function NewTaskButton({ onTaskCreated }: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -13,7 +17,10 @@ export default function NewTaskButton() {
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         + New Task
       </button>
-      <TaskFormModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <TaskFormModal 
+        isOpen={isOpen} 
+        onClose={() => setIsOpen(false)}
+        onTaskCreated={onTaskCreated} />
     </>
   )
 }

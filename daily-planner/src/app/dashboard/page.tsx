@@ -29,14 +29,34 @@ export default function DashboardPage() {
     fetchTasks()
   }, [])
 
+  // Callback to add new task to the list
+  const handleTaskCreated = (newTask: any) => {
+    setTasks(prev => [newTask, ...prev]);
+  };
+
+  const handleTaskUpdate = (updatedTask: any) => {
+    setTasks(prev =>
+      prev.map(task => (task.id === updatedTask.id ? updatedTask : task))
+    )
+  }
+
+  const handleTaskDelete = (taskId: string) => {
+    setTasks(prev => prev.filter(task => task.id !== taskId))
+  }
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-4">My Tasks</h1>
-      <NewTaskButton />
+      <NewTaskButton onTaskCreated={handleTaskCreated}/>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tasks.map(task => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard 
+            key={task.id} 
+            task={task}
+            onTaskUpdated={handleTaskUpdate}
+            onTaskDeleted={handleTaskDelete} 
+          />
         ))}
       </div>
       
