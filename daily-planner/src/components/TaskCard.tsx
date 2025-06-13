@@ -2,6 +2,8 @@
 
 import { supabase } from '@/utils/supabaseClient'
 import { useState, useEffect } from 'react'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
+import { Trash } from 'lucide-react'
 
 interface TaskCardProps {
   task: any
@@ -12,6 +14,7 @@ interface TaskCardProps {
 export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCardProps) {
   const [pendingDone, setPendingDone] = useState(false)
   const [undoTimeout, setUndoTimeout] = useState<NodeJS.Timeout | null>(null)
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const hasDueDate = !!task.due_date;
 
   // Mark task as completed
@@ -64,10 +67,10 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCar
     <div className="relative bg-white p-4 rounded shadow h-full flex flex-col">
       
       <button
-          onClick={handleDelete}
+          onClick={() => setIsConfirmOpen(true)}
           className="absolute top-3 right-3 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
         >
-          Delete
+          <Trash size={18} />
       </button>
       
       <div className="flex-grow">
@@ -105,6 +108,13 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCar
           )}
         </div>
       )}
+
+      <ConfirmDeleteModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleDelete}
+        taskTitle={task.title}
+      />
     </div>
   )
 }
