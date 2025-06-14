@@ -96,36 +96,34 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* loading cog  */}
-    {isLoadingSuggestions && (
-      <div className="flex items-center mt-8 text-gray-500 animate-pulse">
-        <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".25" />
-          <path d="M4 12a8 8 0 018-8v8H4z" fill="currentColor" opacity=".75" />
-        </svg>
-        Generating task suggestions...
-      </div>
-    )}
-
-    {/* suggestions list */}
-    {suggestions.length > 0 && (
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-3">AI Suggested Tasks</h2>
-        <div className="text-black grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {suggestions.map((s, i) => (
-            <div key={i} className="p-4 bg-gray-50 border rounded flex flex-col">
-              <p className="flex-grow">{s}</p>
-              <button
-                onClick={() => handleAddSuggestion(s)}
-                className="mt-4 self-start px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-              >
-                Add to My Tasks
-              </button>
-            </div>
-          ))}
+      {isLoadingSuggestions && (
+        <div className="flex items-center mt-8 text-gray-500 animate-pulse">
+          <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".25" />
+            <path d="M4 12a8 8 0 018-8v8H4z" fill="currentColor" opacity=".75" />
+          </svg>
+          Generating task suggestions...
         </div>
-      </div>
-    )}
+      )}
+      
+      {suggestions.length > 0 && (
+        <div className="relative mt-10">
+          <h2 className="text-xl font-semibold mb-3">AI Suggested Tasks</h2>
+          <div className="text-black grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {suggestions.map((s, i) => (
+              <div key={i} className="p-4 bg-gray-50 border rounded flex flex-col">
+                <p className="flex-grow">{s}</p>
+                <button
+                  onClick={() => handleAddSuggestion(s)}
+                  className="mt-4 self-start px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                >
+                  Add to My Tasks
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       
     </div>
   )
