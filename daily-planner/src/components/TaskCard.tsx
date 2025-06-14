@@ -9,9 +9,11 @@ interface TaskCardProps {
   task: any
   onTaskUpdated: (task: any) => void
   onTaskDeleted: (taskId: string) => void
+  onTaskCreated: (task: any) => void
+  askAISuggestions: (completedTitle: string) => void
 }
 
-export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCardProps) {
+export default function TaskCard({ task, onTaskUpdated, onTaskDeleted, onTaskCreated, askAISuggestions}: TaskCardProps) {
   const [pendingDone, setPendingDone] = useState(false)
   const [undoTimeout, setUndoTimeout] = useState<NodeJS.Timeout | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
@@ -22,23 +24,52 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCar
     setPendingDone(true)
 
     const timeout = setTimeout(async () => {
-      const { data, error } = await supabase
+      const { data: updatedTask, error } = await supabase
       .from('tasks')
       .update({ completed: true })
       .eq('id', task.id)
       .select()
       .single()
 
-      if (!error && data) {
-        onTaskUpdated(data)
+      if (error || !updatedTask) {
+        console.error('Error marking task as completed:', error)
+        setPendingDone(false)
+        setUndoTimeout(null)
+        return
       }
 
+      onTaskUpdated(updatedTask)
       setPendingDone(false)
       setUndoTimeout(null)
 
-    }, 5000)
+      askAISuggestions(updatedTask.title)
+
+    }, 1000)
 
     setUndoTimeout(timeout)
+  }
+
+  // 3️⃣ save chosen suggestions
+  const addSelected = async (selected: string[]) => {
+    if (!selected.length) return
+
+    const rows = selected.map(s => ({
+      title: s,
+      description: '',
+      priority: 'medium',
+      is_complete: false,
+      user_id: task.user_id,
+    }))
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert(rows)
+      .select()
+
+    if (!error && data) {
+      // push each new task into dashboard list
+      data.forEach(onTaskCreated)
+    }
   }
 
   const handleUndo = () => {
@@ -115,6 +146,8 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted }: TaskCar
         onConfirm={handleDelete}
         taskTitle={task.title}
       />
+
     </div>
+
   )
 }

@@ -1,18 +1,48 @@
-import axios from 'axios'
+import { InferenceClient } from "@huggingface/inference";
 
-const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models/google/flan-t5-base'
 const HUGGINGFACE_API_KEY = process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY!
+const client = new InferenceClient(HUGGINGFACE_API_KEY);
 
-export async function queryHuggingFace(prompt: string) {
-  const response = await axios.post(
-    HUGGINGFACE_API_URL,
-    { inputs: prompt },
-    {
-      headers: {
-        Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  )
-  return response.data
+export async function getSuggestedTasks(latestTask: string) {
+  const prompt = `
+  You are a helpful productivity coach.
+  A user just completed the task: "${latestTask}".
+  Suggest exactly 3 concise follow‑up tasks the user could do next.
+  Return them as a plain numbered list.
+  `
+
+  const chatCompletion = await client.chatCompletion({
+    provider: "featherless-ai",
+    model: "deepseek-ai/DeepSeek-R1-0528",
+    messages: [
+        {
+            role: "assistant",
+            content: prompt,
+        },
+    ],
+  });
+
+  const text = chatCompletion.choices[0]?.message?.content ?? '';
+  
+  // Split by newlines and remove empty lines
+  const lines = text
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line);
+
+  const suggestions = lines.slice(-3)
+  
+  // Optional: Strip out "1. ", "2. ", etc.
+  const cleanSuggestions = suggestions.map(line => line.replace(/^\d+\.\s*/, ''));
+
+  return cleanSuggestions;
+
+  
+  // ➜ split into an array, trim bullets/numbers
+  // return text
+  //   .split('\n')
+  //   .map(s => s.replace(/^\d+\.?\s*/, '').trim())
+  //   .filter(Boolean)
+  //   .slice(0, 3)
+
 }
