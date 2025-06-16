@@ -11,11 +11,10 @@ interface TaskCardProps {
   task: Task
   onTaskUpdated: (task: Task) => void
   onTaskDeleted: (taskId: string) => void
-  onTaskCreated: (task: Task) => void
   askAISuggestions: (completedTitle: string) => void
 }
 
-export default function TaskCard({ task, onTaskUpdated, onTaskDeleted, onTaskCreated, askAISuggestions}: TaskCardProps) {
+export default function TaskCard({ task, onTaskUpdated, onTaskDeleted, askAISuggestions}: TaskCardProps) {
   const [pendingDone, setPendingDone] = useState(false)
   const [undoTimeout, setUndoTimeout] = useState<NodeJS.Timeout | null>(null)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
