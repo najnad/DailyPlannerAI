@@ -50,7 +50,7 @@ export default function ConfirmDeleteModal({
                   Confirm Deletion
                 </Dialog.Title>
                 <div className="mt-2 text-sm text-gray-600">
-                  Are you sure you want to delete <span className="font-semibold text-gray-900">"{taskTitle}"</span>? This action cannot be undone.
+                  Are you sure you want to delete <span className="font-semibold text-gray-900">&quot;{taskTitle}&quot;</span>? This action cannot be undone.
                 </div>
 
                 <div className="mt-4 flex justify-end space-x-2">

@@ -91,7 +91,6 @@ export default function DashboardPage() {
             task={task}
             onTaskUpdated={handleTaskUpdate}
             onTaskDeleted={handleTaskDelete} 
-            onTaskCreated={handleTaskCreated}
             askAISuggestions={askAISuggestions}
           />
         ))}
