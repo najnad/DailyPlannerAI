@@ -1,5 +1,5 @@
 export interface Task {
-  id: string                 // Unique task ID (from Supabase)
+  id: string                 // Unique task ID 
   user_id: string            // Foreign key to the user
   title: string              // Short task title
   description?: string       // Optional detailed notes

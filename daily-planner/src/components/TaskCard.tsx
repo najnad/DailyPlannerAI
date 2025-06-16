@@ -1,15 +1,17 @@
 'use client'
 
 import { supabase } from '@/utils/supabaseClient'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { Trash } from 'lucide-react'
+import { Task } from '@/types/Task'
+
 
 interface TaskCardProps {
-  task: any
-  onTaskUpdated: (task: any) => void
+  task: Task
+  onTaskUpdated: (task: Task) => void
   onTaskDeleted: (taskId: string) => void
-  onTaskCreated: (task: any) => void
+  onTaskCreated: (task: Task) => void
   askAISuggestions: (completedTitle: string) => void
 }
 
@@ -49,29 +51,6 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted, onTaskCre
     setUndoTimeout(timeout)
   }
 
-  // 3️⃣ save chosen suggestions
-  const addSelected = async (selected: string[]) => {
-    if (!selected.length) return
-
-    const rows = selected.map(s => ({
-      title: s,
-      description: '',
-      priority: 'medium',
-      is_complete: false,
-      user_id: task.user_id,
-    }))
-
-    const { data, error } = await supabase
-      .from('tasks')
-      .insert(rows)
-      .select()
-
-    if (!error && data) {
-      // push each new task into dashboard list
-      data.forEach(onTaskCreated)
-    }
-  }
-
   const handleUndo = () => {
     if (undoTimeout) {
       clearTimeout(undoTimeout)
@@ -109,7 +88,7 @@ export default function TaskCard({ task, onTaskUpdated, onTaskDeleted, onTaskCre
         <p className="text-gray-600 mb-2 line-clamp-3">{task.description}</p>
         {hasDueDate && (
           <p className="text-sm text-gray-500 mb-2">
-            Due: {new Date(task.due_date).toLocaleString()}
+            Due: {task.due_date && new Date(task.due_date).toLocaleString()}
           </p>
         )}
         <p className="text-sm text-gray-700">

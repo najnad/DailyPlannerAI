@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import TaskFormModal from './TaskFormModal'
 import { Plus } from 'lucide-react'
+import { Task } from '@/types/Task';
 
 interface Props {
-  onTaskCreated: (task: any) => void;
+  onTaskCreated: (task: Task) => void;
 
 }
 

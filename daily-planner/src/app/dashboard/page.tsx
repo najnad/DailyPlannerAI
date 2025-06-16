@@ -5,9 +5,10 @@ import { supabase } from '@/utils/supabaseClient'
 import NewTaskButton from "@/components/NewTaskButton";
 import TaskCard from '@/components/TaskCard';
 import { getSuggestedTasks } from '@/utils/huggingFaceClient';
+import { Task } from '@/types/Task';
 
 export default function DashboardPage() {
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   
@@ -33,11 +34,11 @@ export default function DashboardPage() {
   }, [])
 
   // Callback to add new task to the list
-  const handleTaskCreated = (newTask: any) => {
+  const handleTaskCreated = (newTask: Task) => {
     setTasks(prev => [newTask, ...prev]);
   };
 
-  const handleTaskUpdate = (updatedTask: any) => {
+  const handleTaskUpdate = (updatedTask: Task) => {
     setTasks(prev =>
       prev.map(task => (task.id === updatedTask.id ? updatedTask : task))
     )

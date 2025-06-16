@@ -3,11 +3,12 @@
 import { Dialog } from '@headlessui/react'
 import { useState } from 'react'
 import { supabase } from '@/utils/supabaseClient'
+import { Task } from '@/types/Task';
 
 interface TaskFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTaskCreated: (task: any) => void;
+  onTaskCreated: (task: Task) => void;
 
 }
 
