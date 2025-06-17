@@ -36,11 +36,11 @@ export async function middleware(req: NextRequest) {
   )
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // Redirect to login if user is not authenticated
-  if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
+  if (!user && req.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
