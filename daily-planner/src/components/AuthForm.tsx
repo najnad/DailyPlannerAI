@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/utils/supabaseClient'
 import { useRouter } from 'next/navigation'
 
@@ -17,6 +17,21 @@ export default function AuthForm() {
     e.preventDefault()
     setLoading(true)
     setMessage('')
+    
+    // if user is already logged in, redirect to dashboard
+    useEffect(() => {
+      const checkSession = async () => {
+        const {
+          data: { session }
+        } = await supabase.auth.getSession()
+
+        if (session) {
+          router.push('/dashboard')
+        }
+      }
+
+      checkSession()
+    }, [])
 
     // 🧠 Validate password match in signup mode
     if (mode === 'signup' && password !== confirmPassword) {
