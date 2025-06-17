@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const router = useRouter()
 
   // 🔄 Check auth state on mount
@@ -17,6 +18,7 @@ export default function Navbar() {
         data: { session },
       } = await supabase.auth.getSession()
       setIsLoggedIn(!!session)
+      setAuthChecked(true)
     }
 
     checkSession()
@@ -32,9 +34,11 @@ export default function Navbar() {
   }, [])
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    await supabase.auth.signOut({ scope: 'global' })
     router.push('/')
   }
+
+  if (!authChecked) return null
 
   return (
     <nav className="bg-white border-b shadow-sm sticky top-0 z-50">
@@ -47,7 +51,11 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex space-x-6">
-            <Link href="/dashboard" className="text-gray-700 hover:text-blue-500">Dashboard</Link>
+            {isLoggedIn && (
+              <Link href="/dashboard" className="text-gray-700 hover:text-blue-500">
+                Dashboard
+              </Link>
+            )}
 
             {isLoggedIn ? (
               <button
@@ -75,7 +83,11 @@ export default function Navbar() {
       {/* Mobile Dropdown Menu */}
       {isOpen && (
         <div className="md:hidden px-4 pb-4 space-y-2">
-          <Link href="/dashboard" className="block text-gray-700 hover:text-blue-500">Dashboard</Link>
+          {isLoggedIn && (
+            <Link href="/dashboard" className="block text-gray-700 hover:text-blue-500">
+              Dashboard
+            </Link>
+          )}
 
           {isLoggedIn ? (
             <button
