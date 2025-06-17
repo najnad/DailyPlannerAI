@@ -13,25 +13,25 @@ export default function AuthForm() {
   const [message, setMessage] = useState('')
   const [mode, setMode] = useState<'login' | 'signup'>('login') // Removed 'magic'
 
+  // if user is already logged in, redirect to dashboard
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession()
+
+      if (session) {
+        router.push('/dashboard')
+      }
+    }
+
+    checkSession()
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setMessage('')
-    
-    // if user is already logged in, redirect to dashboard
-    useEffect(() => {
-      const checkSession = async () => {
-        const {
-          data: { session }
-        } = await supabase.auth.getSession()
-
-        if (session) {
-          router.push('/dashboard')
-        }
-      }
-
-      checkSession()
-    }, [])
 
     // 🧠 Validate password match in signup mode
     if (mode === 'signup' && password !== confirmPassword) {
