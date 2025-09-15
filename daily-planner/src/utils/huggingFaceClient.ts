@@ -12,8 +12,8 @@ export async function getSuggestedTasks(latestTask: string) {
   `
 
   const chatCompletion = await client.chatCompletion({
-    provider: "featherless-ai",
-    model: "deepseek-ai/DeepSeek-R1-0528",
+    provider: "novita",
+    model: "Qwen/Qwen3-Next-80B-A3B-Instruct",
     messages: [
         {
             role: "assistant",
